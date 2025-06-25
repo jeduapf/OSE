@@ -368,7 +368,7 @@ def rodar_esse_negocio():
                 st.warning("Aucune année qualifiée trouvée")
         else:
             st.error("Aucune occurrence ne correspond aux critères choisis !")
-            st.title("Aucune occurrence...")
+            # st.title("Aucune occurrence...")
     
     # Tableau de données (déroulable)
     with st.expander("📋 Voir les données filtrées", expanded=False):
