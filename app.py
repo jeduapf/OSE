@@ -24,8 +24,6 @@ def preprocess_all():
     co2_keys_sorted = sorted(co2_keys)
     elec_keys_sorted = sorted(elec_keys)
 
-    """## Defining the dataset variables"""
-
     cols = ['year', 'country', 'gdp', 'population', 'gdp_pct_change', 'population_pct_change', 'hdi', 'per_capita_electricity',
             'coal_electricity', 'fossil_electricity', 'gas_electricity', 'hydro_electricity', 'low_carbon_electricity',
             'nuclear_electricity', 'oil_electricity', 'other_renewable_electricity', 'other_renewable_exc_biofuel_electricity',
@@ -199,7 +197,7 @@ def create_dynamic_plot(highlight_country, thresholds, data, from_year, SEQ = 4)
         country_strikes = strikes.get(highlight_country, [])
         if country_strikes:
             longest_streak = max(country_strikes, key=lambda x: x['length'])
-            streak_info = f"<<Consecutive>>: {longest_streak['start']}-{longest_streak['end']} ({longest_streak['length']} years)"
+            streak_info = f"Années consecutives: {longest_streak['start']}-{longest_streak['end']} ({longest_streak['length']} years)"
         else:
             streak_info = "No consecutive years"
         
@@ -256,7 +254,7 @@ def create_summary_stats(data, thresholds, from_year):
 
 # Application principale Streamlit
 def rodar_esse_negocio():
-    st.title("🌍 Analyse Dynamique du Développement des Pays")
+    st.title("Analyse Dynamique des Pays")
     st.markdown("Visualisation interactive des pays atteignant les seuils de développement au fil du temps")
     
     # Chargement des données
