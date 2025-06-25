@@ -268,14 +268,14 @@ def rodar_esse_negocio():
     from_year = st.sidebar.selectbox(
         "Année DEPUIS :",
         options=list(range(2000, 2019)),
-        index=10  # Valeur par défaut : 2012
+        index=15  # Valeur par défaut : 2015
     )
 
     # Sélection d'années de consecutives
     min_conscutiver_years = st.sidebar.selectbox(
         "Années Consecutives :",
         options=list(range(1, 18)),
-        index=4  # Valeur par défaut : 4
+        index=3  # Valeur par défaut : 4
     )
     
     # Sélection du pays à mettre en évidence
