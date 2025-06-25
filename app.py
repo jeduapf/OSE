@@ -252,7 +252,159 @@ def create_summary_stats(data, thresholds, from_year):
         'avg_countries_per_year': total_country_years / max(len(filtered_dict), 1)
     }
 
-# Application principale Streamlit
+# # Application principale Streamlit
+# def rodar_esse_negocio():
+#     st.title("Analyse Dynamique des Pays")
+#     st.markdown("Visualisation interactive des pays atteignant les seuils de développement au fil du temps")
+    
+#     # Chargement des données
+#     with st.spinner("Chargement des données..."):
+#         data = load_data()
+    
+#     # Contrôles dans la barre latérale
+#     st.sidebar.header("📊 Contrôles")
+    
+#     # Sélection de l’année de départ
+#     from_year = st.sidebar.selectbox(
+#         "Année DEPUIS :",
+#         options=list(range(2000, 2019)),
+#         index=15  # Valeur par défaut : 2015
+#     )
+
+#     # Sélection d'années de consecutives
+#     min_conscutiver_years = st.sidebar.selectbox(
+#         "Années Consecutives :",
+#         options=list(range(1, 18)),
+#         index=3  # Valeur par défaut : 4
+#     )
+    
+#     # Sélection du pays à mettre en évidence
+#     available_countries = sorted(data['country'].unique())
+#     highlight_country = st.sidebar.selectbox(
+#         "Mettre en évidence le pays :",
+#         options=available_countries,
+#         index=available_countries.index('Senegal') if 'Senegal' in available_countries else 0
+#     )
+    
+#     st.sidebar.markdown("---")
+#     st.sidebar.header("🎚️ Seuils")
+    
+#     # Curseurs de seuils
+#     gdp_threshold = st.sidebar.slider(
+#         "Croissance du PIB (%) - Minimum :",
+#         min_value=-1.0, max_value=5.0, value=1.5, step=0.1,
+#         help="Les pays doivent avoir une croissance du PIB SUPÉRIEURE à ce seuil"
+#     )
+    
+#     hdi_threshold = st.sidebar.slider(
+#         "IDH - Maximum :",
+#         min_value=0.30, max_value=0.90, value=0.70, step=0.02,
+#         help="Les pays doivent avoir un IDH INFÉRIEUR à ce seuil"
+#     )
+    
+#     pop_threshold = st.sidebar.slider(
+#         "Croissance démographique (%) - Minimum :",
+#         min_value=0.5, max_value=3.0, value=1.1, step=0.1,
+#         help="Les pays doivent avoir une croissance démographique SUPÉRIEURE à ce seuil"
+#     )
+    
+#     # Dictionnaire des seuils
+#     thresholds = {
+#         'gdp_pct_change': (gdp_threshold, 'bigger'),
+#         'hdi': (hdi_threshold, 'smaller'),
+#         'population_pct_change': (pop_threshold, 'bigger'),
+#     }
+    
+#     # Affichage des seuils actuels
+#     st.sidebar.markdown("---")
+#     st.sidebar.markdown("**Critères actuels :**")
+#     st.sidebar.markdown(f"• Croissance du PIB > {gdp_threshold}%")
+#     st.sidebar.markdown(f"• IDH < {hdi_threshold:.2f}")
+#     st.sidebar.markdown(f"• Croissance démographique > {pop_threshold}%")
+    
+#     # Zone de contenu principal
+#     col1, col2 = st.columns([3, 1])
+    
+#     with col1:
+#         # Générer et afficher le graphique principal
+#         with st.spinner("Génération du graphique..."):
+#             try: 
+#                 FLAG = True
+#                 fig, PVDs = create_dynamic_plot(highlight_country, thresholds, data, from_year, SEQ = min_conscutiver_years)
+#                 st.plotly_chart(fig, use_container_width=True)
+#             except:
+#                 FLAG = False
+        
+#     with col2:
+#         if FLAG:
+#         # Statistiques résumées
+#         st.subheader("📈 Statistiques Résumées")
+#         stats = create_summary_stats(data, thresholds, from_year)
+        
+#         st.metric("Pays uniques", stats['unique_countries'])
+#         st.metric("Total pays-années", stats['total_country_years'])
+#         st.metric("Années avec données", stats['years_with_data'])
+#         st.metric("Moy. pays/année", f"{stats['avg_countries_per_year']:.1f}")
+        
+#         # Informations sur le pays mis en évidence
+#         st.subheader(f"🎯 {highlight_country}")
+        
+#         country_dict = get_countries_years(data, thresholds)
+#         highlight_years = [year for year, countries in country_dict.items() 
+#                           if highlight_country in countries and year >= from_year]
+        
+#         if highlight_years:
+#             st.success(f"Qualifié pour {len(highlight_years)} années")
+#             st.write(f"Années : {min(highlight_years)}-{max(highlight_years)}")
+            
+#             plot_data = [{"year": year, "country": highlight_country} for year in highlight_years]
+#             if plot_data:
+#                 plot_df = pd.DataFrame(plot_data)
+#                 strikes = calculate_consecutive_years(plot_df)
+                
+#                 if highlight_country in strikes:
+#                     longest = max(strikes[highlight_country], key=lambda x: x['length'])
+#                     st.info(f"Période la plus longue : {longest['length']} années ({longest['start']}-{longest['end']})")
+#         else:
+#             st.warning("Aucune année qualifiée trouvée")
+    
+#     # Tableau de données (déroulable)
+#     with st.expander("📋 Voir les données filtrées", expanded=False):
+#         country_dict = get_countries_years(data, thresholds)
+#         current_data = []
+#         for year, countries in country_dict.items():
+#             if year >= from_year:
+#                 for country in countries:
+#                     country_row = data[(data['country'] == country) & (data['year'] == year)].iloc[0]
+#                     current_data.append(country_row.to_dict())
+        
+#         if current_data:
+#             df_display = pd.DataFrame(current_data)
+#             st.markdown(f"## Données d'énergie de [Our World in Data](https://github.com/owid)")
+#             st.dataframe(df_display, use_container_width=True)
+#             st.markdown("---")
+#             st.markdown(f"## Pays qui suivent les critères pendant une séquence d'au moins {min_conscutiver_years} années")
+#             st.dataframe(PVDs, use_container_width=True)
+#         else:
+#             st.info("Aucune donnée ne correspond aux critères actuels")
+    
+#     # Instructions
+#     with st.expander("ℹ️ Comment utiliser", expanded=False):
+#         st.markdown("""
+#         **Contrôles :**
+#         - **Année DEPUIS** : Année de début de l'analyse
+#         - **Mettre en évidence le pays** : Pays à afficher en rouge
+#         - **Seuils** : Ajuster les critères de sélection des pays
+        
+#         **Graphique :**
+#         - Points bleus : Tous les pays répondant aux critères
+#         - Ligne rouge : Trajectoire du pays sélectionné
+#         - Survolez pour les détails
+        
+#         **Critères :**
+#         Les pays doivent satisfaire à TOUS les critères de seuil **simultanément** pour chaque année.
+#         """)
+
 def rodar_esse_negocio():
     st.title("Analyse Dynamique des Pays")
     st.markdown("Visualisation interactive des pays atteignant les seuils de développement au fil du temps")
@@ -264,21 +416,18 @@ def rodar_esse_negocio():
     # Contrôles dans la barre latérale
     st.sidebar.header("📊 Contrôles")
     
-    # Sélection de l’année de départ
     from_year = st.sidebar.selectbox(
         "Année DEPUIS :",
         options=list(range(2000, 2019)),
-        index=15  # Valeur par défaut : 2015
+        index=15
     )
 
-    # Sélection d'années de consecutives
     min_conscutiver_years = st.sidebar.selectbox(
-        "Années Consecutives :",
+        "Années Consécutives :",
         options=list(range(1, 18)),
-        index=3  # Valeur par défaut : 4
+        index=3
     )
     
-    # Sélection du pays à mettre en évidence
     available_countries = sorted(data['country'].unique())
     highlight_country = st.sidebar.selectbox(
         "Mettre en évidence le pays :",
@@ -289,7 +438,6 @@ def rodar_esse_negocio():
     st.sidebar.markdown("---")
     st.sidebar.header("🎚️ Seuils")
     
-    # Curseurs de seuils
     gdp_threshold = st.sidebar.slider(
         "Croissance du PIB (%) - Minimum :",
         min_value=-1.0, max_value=5.0, value=1.5, step=0.1,
@@ -308,62 +456,64 @@ def rodar_esse_negocio():
         help="Les pays doivent avoir une croissance démographique SUPÉRIEURE à ce seuil"
     )
     
-    # Dictionnaire des seuils
     thresholds = {
         'gdp_pct_change': (gdp_threshold, 'bigger'),
         'hdi': (hdi_threshold, 'smaller'),
         'population_pct_change': (pop_threshold, 'bigger'),
     }
     
-    # Affichage des seuils actuels
     st.sidebar.markdown("---")
     st.sidebar.markdown("**Critères actuels :**")
     st.sidebar.markdown(f"• Croissance du PIB > {gdp_threshold}%")
     st.sidebar.markdown(f"• IDH < {hdi_threshold:.2f}")
     st.sidebar.markdown(f"• Croissance démographique > {pop_threshold}%")
     
-    # Zone de contenu principal
+    # Génération du graphique
+    with st.spinner("Génération du graphique..."):
+        fig, PVDs = create_dynamic_plot(highlight_country, thresholds, data, from_year, SEQ=min_conscutiver_years)
+
+    has_valid_fig = fig is not None and PVDs is not None and not PVDs.empty
+
     col1, col2 = st.columns([3, 1])
-    
+
     with col1:
-        # Générer et afficher le graphique principal
-        with st.spinner("Génération du graphique..."):
-            fig, PVDs = create_dynamic_plot(highlight_country, thresholds, data, from_year, SEQ = min_conscutiver_years)
+        if has_valid_fig:
             st.plotly_chart(fig, use_container_width=True)
-    
-    with col2:
-        # Statistiques résumées
-        st.subheader("📈 Statistiques Résumées")
-        stats = create_summary_stats(data, thresholds, from_year)
-        
-        st.metric("Pays uniques", stats['unique_countries'])
-        st.metric("Total pays-années", stats['total_country_years'])
-        st.metric("Années avec données", stats['years_with_data'])
-        st.metric("Moy. pays/année", f"{stats['avg_countries_per_year']:.1f}")
-        
-        # Informations sur le pays mis en évidence
-        st.subheader(f"🎯 {highlight_country}")
-        
-        country_dict = get_countries_years(data, thresholds)
-        highlight_years = [year for year, countries in country_dict.items() 
-                          if highlight_country in countries and year >= from_year]
-        
-        if highlight_years:
-            st.success(f"Qualifié pour {len(highlight_years)} années")
-            st.write(f"Années : {min(highlight_years)}-{max(highlight_years)}")
-            
-            plot_data = [{"year": year, "country": highlight_country} for year in highlight_years]
-            if plot_data:
-                plot_df = pd.DataFrame(plot_data)
-                strikes = calculate_consecutive_years(plot_df)
-                
-                if highlight_country in strikes:
-                    longest = max(strikes[highlight_country], key=lambda x: x['length'])
-                    st.info(f"Période la plus longue : {longest['length']} années ({longest['start']}-{longest['end']})")
         else:
-            st.warning("Aucune année qualifiée trouvée")
-    
-    # Tableau de données (déroulable)
+            st.warning("⚠️ Les critères choisis ne permettent pas la création du graphique, vu qu’il n’y a pas de pays qui rentrent dans les critères.")
+
+    with col2:
+        if has_valid_fig:
+            st.subheader("📈 Statistiques Résumées")
+            stats = create_summary_stats(data, thresholds, from_year)
+            
+            st.metric("Pays uniques", stats['unique_countries'])
+            st.metric("Total pays-années", stats['total_country_years'])
+            st.metric("Années avec données", stats['years_with_data'])
+            st.metric("Moy. pays/année", f"{stats['avg_countries_per_year']:.1f}")
+            
+            st.subheader(f"🎯 {highlight_country}")
+            country_dict = get_countries_years(data, thresholds)
+            highlight_years = [year for year, countries in country_dict.items() 
+                               if highlight_country in countries and year >= from_year]
+            
+            if highlight_years:
+                st.success(f"Qualifié pour {len(highlight_years)} années")
+                st.write(f"Années : {min(highlight_years)}-{max(highlight_years)}")
+                
+                plot_data = [{"year": year, "country": highlight_country} for year in highlight_years]
+                if plot_data:
+                    plot_df = pd.DataFrame(plot_data)
+                    strikes = calculate_consecutive_years(plot_df)
+                    
+                    if highlight_country in strikes:
+                        longest = max(strikes[highlight_country], key=lambda x: x['length'])
+                        st.info(f"Période la plus longue : {longest['length']} années ({longest['start']}-{longest['end']})")
+            else:
+                st.warning("Aucune année qualifiée trouvée")
+        else:
+            st.warning("⚠️ Les critères choisis ne permettent pas la création du graphique, vu qu’il n’y a pas de pays qui rentrent dans les critères.")
+
     with st.expander("📋 Voir les données filtrées", expanded=False):
         country_dict = get_countries_years(data, thresholds)
         current_data = []
@@ -382,8 +532,7 @@ def rodar_esse_negocio():
             st.dataframe(PVDs, use_container_width=True)
         else:
             st.info("Aucune donnée ne correspond aux critères actuels")
-    
-    # Instructions
+
     with st.expander("ℹ️ Comment utiliser", expanded=False):
         st.markdown("""
         **Contrôles :**
@@ -399,6 +548,7 @@ def rodar_esse_negocio():
         **Critères :**
         Les pays doivent satisfaire à TOUS les critères de seuil **simultanément** pour chaque année.
         """)
+
 
 if __name__ == "__main__":
     rodar_esse_negocio()
